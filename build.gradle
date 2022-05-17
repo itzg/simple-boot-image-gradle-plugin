@@ -29,11 +29,19 @@ gitVersioning.apply {
 
 gradlePlugin {
     plugins {
-        simplePlugin {
+        simpleBootImagePlugin {
             id = 'me.itzg.simple-boot-image'
+            displayName = 'Simple Boot Image Plugin'
+            description = 'A simple Gradle plugin to build very simple Spring Boot application Docker images'
             implementationClass = 'me.itzg.simpleimg.SimpleBootImagePlugin'
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/itzg/simple-boot-image-gradle-plugin'
+    vcsUrl = 'https://github.com/itzg/simple-boot-image-gradle-plugin'
+    tags = ['docker', 'spring boot']
 }
 
 repositories {
