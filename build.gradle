@@ -1,17 +1,46 @@
 plugins {
-    id 'java'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.18.0'
+    // https://github.com/qoomon/gradle-git-versioning-plugin
+    id 'me.qoomon.git-versioning' version '6.1.0'
 }
 
 group 'me.itzg'
 version '1.0-SNAPSHOT'
+gitVersioning.apply {
+    refs {
+        tag('.+') {
+            version = '${ref}'
+        }
+        branch('main') {
+            version = '${describe.tag}-SNAPSHOT'
+        }
+        branch('.+') {
+            version = '${ref}-SNAPSHOT'
+        }
+    }
+
+    // optional fallback configuration in case of no matching ref configuration
+    rev {
+        version = '${commit}'
+    }
+}
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'me.itzg.simple-boot-image'
+            implementationClass = 'me.itzg.simpleimg.SimpleBootImagePlugin'
+        }
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 test {
