@@ -30,7 +30,7 @@ gitVersioning.apply {
 gradlePlugin {
     plugins {
         simpleBootImagePlugin {
-            id = 'me.itzg.simple-boot-image'
+            id = 'io.github.itzg.simple-boot-image'
             displayName = 'Simple Boot Image Plugin'
             description = 'A simple Gradle plugin to build very simple Spring Boot application Docker images'
             implementationClass = 'me.itzg.simpleimg.SimpleBootImagePlugin'
