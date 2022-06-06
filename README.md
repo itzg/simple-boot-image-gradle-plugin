@@ -39,20 +39,9 @@ simpleBootImage {
 ### Skaffold ready and optional layered build
 
 ```
-boolean isLayered() {
-    Boolean.parseBoolean(findProperty('layeredImage') ?: 'true')
-}
-
-tasks.named('bootJar') {
-    dependsOn reactBuild
-    classpath(file(uiDestBuildDir))
-    layered {
-        enabled = isLayered()
-    }
-}
-
 simpleBootImage {
-    layered = isLayered()
+    // layered will also propagate to the layered.enabled property of the bootJar task
+    layered = Boolean.parseBoolean(findProperty('layeredImage') ?: 'true')
     imageRepo = findProperty('imageRepo')
     // for skaffold
     fullyQualifiedImageName = System.getenv('IMAGE')
