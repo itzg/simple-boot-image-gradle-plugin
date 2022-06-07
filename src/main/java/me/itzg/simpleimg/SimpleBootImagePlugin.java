@@ -7,6 +7,7 @@ import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
+import org.springframework.boot.gradle.tasks.bundling.BootJar;
 
 public class SimpleBootImagePlugin implements Plugin<Project> {
 
@@ -26,7 +27,15 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
             final BootImageExtension extension = registerExtension(project);
 
             registerTasks(project, extension);
+
+            configureBootJarTask(project, extension);
         }
+    }
+
+    private void configureBootJarTask(Project project, BootImageExtension extension) {
+        project.getTasks().named("bootJar", BootJar.class, task ->
+            task.getLayered().setEnabled(extension.getLayered().get())
+        );
     }
 
     private void registerTasks(Project project, BootImageExtension extension) {

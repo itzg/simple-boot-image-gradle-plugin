@@ -1,3 +1,5 @@
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.itzg.simple-boot-image)](https://plugins.gradle.org/plugin/io.github.itzg.simple-boot-image)
+
 A simple Gradle plugin to build very simple Spring Boot application Docker images.
 
 > Just Docker, Java, and your Spring Boot application
@@ -39,20 +41,9 @@ simpleBootImage {
 ### Skaffold ready and optional layered build
 
 ```
-boolean isLayered() {
-    Boolean.parseBoolean(findProperty('layeredImage') ?: 'true')
-}
-
-tasks.named('bootJar') {
-    dependsOn reactBuild
-    classpath(file(uiDestBuildDir))
-    layered {
-        enabled = isLayered()
-    }
-}
-
 simpleBootImage {
-    layered = isLayered()
+    // layered will also propagate to the layered.enabled property of the bootJar task
+    layered = Boolean.parseBoolean(findProperty('layeredImage') ?: 'true')
     imageRepo = findProperty('imageRepo')
     // for skaffold
     fullyQualifiedImageName = System.getenv('IMAGE')
