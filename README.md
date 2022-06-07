@@ -71,7 +71,7 @@ profiles:
   - name: windows
     build:
       artifacts:
-        - image: cah-web-dev
+        - image: app-dev
           custom:
             # override this since Windows needs backslash'y paths
             buildCommand: .\gradlew pushSimpleBootImage
