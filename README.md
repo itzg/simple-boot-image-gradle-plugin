@@ -1,3 +1,5 @@
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.itzg.simple-boot-image)](https://plugins.gradle.org/plugin/io.github.itzg.simple-boot-image)
+
 A simple Gradle plugin to build very simple Spring Boot application Docker images.
 
 > Just Docker, Java, and your Spring Boot application
