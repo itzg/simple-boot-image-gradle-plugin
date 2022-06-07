@@ -22,38 +22,61 @@ The Docker client needs to be installed locally with access to a Docker daemon. 
 ## Primary tasks
 
 - `buildSimpleBootImage`
-  - **NOTE** if using buildx, the default, pushing to a registry can be optimized into this same task by setting `simpleBootImage.push` to `true`.
+  - **NOTE** if using buildx, the default, pushing to a registry can be optimized into this same task by setting the extension property `simpleBootImage.push` to `true`.
 - `pushSimpleBootImage`
+
+## Configuration
+
+This plugin adds an extension named `springBootImage`; however, the defaults use a combination of gradle properties and environment variables to adapt easily to CI/CD and Skaffold builds.
+
+The properties of the extension are:
+
+| Name                    | Default                                                                       |
+|-------------------------|-------------------------------------------------------------------------------|
+| imageRepo               | Property `imageRepo`                                                          |
+| imageName               | Property `imageName`<br/>or `project.name`                                    |
+| baseImage               | Property `imageBase`<br/>or `"eclipse-temurin:17"`                            |
+| tags                    | `["latest", project.version]`                                                 |
+| fullyQualifiedImageName | Environment variable `IMAGE`<br/>or uses `imageRepo`, `imageName`, and `tags` |
+| pullForBuild            | Property `imagePull`<br/>or `false`                                           |
+| push                    | Property `imagePush`<br/>or Environment variable `PUSH_IMAGE`<br/>or `false`  |
+| layered                 | Property `imageLayered`<br/>or `true`                                         |
+| cacheFrom               | Property `imageCacheFrom`                                                     |
+| cacheTo                 | Property `imageCacheTo`                                                       |
+| useBuildx               | `true`                                                                        |
+| exportPort              | `8080`                                                                        |
 
 ## Examples
 
-### Minimal suitable for CI builds
+### Skaffold configuration
 
-```
-simpleBootImage {
-    imageRepo = findProperty('imageRepo')
-    imageName = findProperty('imageName') ?: project.name
-    tags = ['latest', project.version]
-    push = Boolean.parseBoolean(findProperty('imagePush') ?: 'false' )
-}
-```
-
-### Skaffold ready and optional layered build
-
-```
-simpleBootImage {
-    // layered will also propagate to the layered.enabled property of the bootJar task
-    layered = Boolean.parseBoolean(findProperty('layeredImage') ?: 'true')
-    imageRepo = findProperty('imageRepo')
-    // for skaffold
-    fullyQualifiedImageName = System.getenv('IMAGE')
-    imageName = findProperty('imageName') ?: project.name
-    tags = ['latest', project.version]
-    push = Boolean.parseBoolean(findProperty('imagePush') ?:
-            // for skaffold
-            System.getenv('PUSH_IMAGE') ?:
-                    // default
-                    'false'
-    )
-}
+skaffold.yaml:
+```yaml
+# nonk8s
+apiVersion: skaffold/v2beta27
+kind: Config
+metadata:
+  name: app-dev
+build:
+  artifacts:
+    - image: app-dev
+      custom:
+        buildCommand: ./gradlew pushSimpleBootImage
+        dependencies:
+          paths:
+            - build.gradle
+            - src/main/java
+            - src/main/resources
+profiles:
+  - name: windows
+    build:
+      artifacts:
+        - image: cah-web-dev
+          custom:
+            # override this since Windows needs backslash'y paths
+            buildCommand: .\gradlew pushSimpleBootImage
+deploy:
+  kubectl:
+    manifests:
+      - k8s/*.yml
 ```
