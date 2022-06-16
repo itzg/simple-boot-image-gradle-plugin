@@ -10,7 +10,7 @@ public abstract class BootImageExtension {
     void apply(Project project) {
         getBaseImage().convention(fromStringProperty(project, "imageBase", "eclipse-temurin:17"));
         getImageName().convention(fromStringProperty(project, "imageName", project.getName()));
-        getTags().convention(List.of("latest", project.getVersion().toString()));
+        getTags().convention(project.getProviders().provider(() -> List.of("latest", project.getVersion().toString())));
         getPullForBuild().convention(fromBooleanProperty(project, "imagePull", false));
         getPush().convention(resolvePushConvention(project));
         getLayered().convention(fromBooleanProperty(project, "imageLayered", true));
