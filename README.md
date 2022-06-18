@@ -82,7 +82,7 @@ deploy:
       - k8s/*.yml
 ```
 
-### Github Actions Workflow
+### GitHub Actions Workflow
 
 ```yaml
       - name: Set up Docker Buildx

@@ -1,12 +1,10 @@
 package me.itzg.simpleimg;
 
-import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.provider.Provider;
 
 public abstract class BootImageExtension {
 
@@ -50,30 +48,4 @@ public abstract class BootImageExtension {
         getLayered().convention(true);
     }
 
-    private Provider<Boolean> resolvePushConvention(Project project) {
-        return project.getProviders().gradleProperty("imagePush")
-            .orElse(project.getProviders().environmentVariable("PUSH_IMAGE"))
-            .map(Boolean::parseBoolean)
-            .orElse(false);    }
-
-    private Provider<Boolean> fromBooleanProperty(Project project, String property, boolean defaultValue) {
-        return project.getProviders().gradleProperty(property)
-            .map(Boolean::parseBoolean)
-            .orElse(defaultValue);
-    }
-
-    private Provider<String> fromStringProperty(Project project, String property) {
-        return project.getProviders().gradleProperty(property);
-    }
-
-    private Provider<String> fromStringProperty(Project project, String property, String defaultValue) {
-        return project.getProviders().gradleProperty(property)
-            .orElse(defaultValue);
-    }
-
-    private Provider<List<String>> fromListProperty(Project project, String property, List<String> defaultValue) {
-        return project.getProviders().gradleProperty(property)
-            .map(s -> Arrays.stream(s.split(",")).toList())
-            .orElse(defaultValue);
-    }
 }
