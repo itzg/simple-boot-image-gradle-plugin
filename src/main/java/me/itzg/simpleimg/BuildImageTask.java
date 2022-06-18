@@ -53,6 +53,30 @@ public abstract class BuildImageTask extends ImageHandlingTask {
     @Input
     abstract ListProperty<String> getPlatforms();
 
+    @Optional
+    @Input
+    abstract Property<String> getImageDescription();
+
+    @Optional
+    @Input
+    abstract Property<String> getImageTitle();
+
+    @Optional
+    @Input
+    abstract Property<String> getImageVersion();
+
+    @Optional
+    @Input
+    abstract Property<String> getImageRevision();
+
+    @Optional
+    @Input
+    abstract Property<String> getImageSourceUrl();
+
+    @Optional
+    @Input
+    abstract ListProperty<String> getExtraImageLabels();
+
     @Inject
     protected abstract ExecOperations getExecOperations();
 
@@ -70,6 +94,12 @@ public abstract class BuildImageTask extends ImageHandlingTask {
             throw new IllegalArgumentException("Can't set cacheTo without buildx enabled");
         }
         getPush().set(sharedProperties.getPush().get() && getUseBuildx().get());
+        getImageDescription().set(sharedProperties.getImageDescription());
+        getImageTitle().set(sharedProperties.getImageTitle());
+        getImageVersion().set(sharedProperties.getImageVersion());
+        getImageRevision().set(sharedProperties.getImageRevision());
+        getImageSourceUrl().set(sharedProperties.getImageSourceUrl());
+        getExtraImageLabels().set(sharedProperties.getExtraImageLabels());
 
         super.apply(sharedProperties);
     }
@@ -142,9 +172,36 @@ public abstract class BuildImageTask extends ImageHandlingTask {
             }
         }
 
+        addLabel(args, "org.opencontainers.image.description", getImageDescription());
+        addLabel(args, "org.opencontainers.image.title", getImageTitle());
+        addLabel(args, "org.opencontainers.image.version", getImageVersion());
+        addLabel(args, "org.opencontainers.image.revision", getImageRevision());
+        addLabel(args, "org.opencontainers.image.source", getImageSourceUrl());
+        for (final String label : getExtraImageLabels().get()) {
+            final String[] parts = label.split("=", 2);
+            if (parts.length != 2) {
+                getLogger().warn("Image label '{}' was malformed", label);
+            }
+            else {
+                args.add("--label");
+                args.add(parts[0] + "=" + parts[1]);
+            }
+        }
+
         args.add(getBootImageDirectory().get().getAsFile().getPath());
 
         return args;
+    }
+
+    private void addLabel(ArrayList<String> args, String labelName, Property<String> property) {
+        if (hasValue(property)) {
+            args.add("--label");
+            args.add(labelName + "=" + property.get());
+        }
+    }
+
+    private boolean hasValue(Property<String> property) {
+        return property.isPresent() && !property.get().isBlank();
     }
 
     private void addOptionalArg(ArrayList<String> args, String arg, Property<String> value) {

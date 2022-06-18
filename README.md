@@ -31,21 +31,27 @@ This plugin adds an extension named `springBootImage`; however, the defaults use
 
 The properties of the extension are:
 
-| Name                    | Default                                                                       |
-|-------------------------|-------------------------------------------------------------------------------|
-| baseImage               | Property `imageBase`<br/>or `"eclipse-temurin:17"`                            |
-| cacheFrom               | Property `imageCacheFrom`                                                     |
-| cacheTo                 | Property `imageCacheTo`                                                       |
-| exportPort              | `8080`                                                                        |
-| fullyQualifiedImageName | Environment variable `IMAGE`<br/>or uses `imageRepo`, `imageName`, and `tags` |
-| imageRepo               | Property `imageRepo`                                                          |
-| imageName               | Property `imageName`<br/>or `project.name`                                    |
-| layered                 | Property `imageLayered`<br/>or `true`                                         |
-| platforms               | _Default for builder_                                                         |
-| pullForBuild            | Property `imagePull`<br/>or `false`                                           |
-| push                    | Property `imagePush`<br/>or Environment variable `PUSH_IMAGE`<br/>or `false`  |
-| tags                    | `["latest", project.version]`                                                 |
-| useBuildx               | `true`                                                                        |
+| Name                    | Default                                                                                     |
+|-------------------------|---------------------------------------------------------------------------------------------|
+| baseImage               | Property `imageBase`<br/>or `"eclipse-temurin:17"`                                          |
+| cacheFrom               | Property `imageCacheFrom`                                                                   |
+| cacheTo                 | Property `imageCacheTo`                                                                     |
+| exportPort              | `8080`                                                                                      |
+| extraImageLabels        | `[]`                                                                                        |
+| fullyQualifiedImageName | Environment variable `IMAGE`<br/>or uses `imageRepo`, `imageName`, and `tags`               |
+| imageDescription        | `project.description`                                                                       |
+| imageName               | Property `imageName`<br/>or `project.name`                                                  |
+| imageRepo               | Property `imageRepo`                                                                        |
+| imageRevision           | Property `git.commit`                                                                       |
+| imageSourceUrl          | If environment variable `GITHUB_REPOSITORY`, then `https://github.com/${GITHUB_REPOSITORY}` |
+| imageTitle              | `project.name`                                                                              |
+| imageVersion            | Property `imageVersion`<br/>or `project.version`                                            |
+| layered                 | Property `imageLayered`<br/>or `true`                                                       |
+| platforms               | _Default for builder_                                                                       |
+| pullForBuild            | Property `imagePull`<br/>or `false`                                                         |
+| push                    | Property `imagePush`<br/>or Environment variable `PUSH_IMAGE`<br/>or `false`                |
+| tags                    | `["latest", project.version]`                                                               |
+| useBuildx               | `true`                                                                                      |
 
 ## Examples
 

@@ -36,6 +36,18 @@ public abstract class SharedProperties {
 
     abstract Property<Boolean> getLayered();
 
+    abstract Property<String> getImageDescription();
+
+    abstract Property<String> getImageTitle();
+
+    abstract Property<String> getImageVersion();
+
+    abstract Property<String> getImageRevision();
+
+    abstract Property<String> getImageSourceUrl();
+
+    abstract ListProperty<String> getExtraImageLabels();
+
     @Inject
     public SharedProperties(Project project, BootImageExtension extension) {
         getBaseImage().value(
@@ -89,6 +101,27 @@ public abstract class SharedProperties {
         getLayered().value(
             fromBooleanGradleProperty(project, "imageLayered")
                 .orElse(extension.getLayered())
+        );
+        getImageDescription().value(extension.getImageDescription());
+        getImageTitle().value(extension.getImageTitle());
+        getImageVersion().value(
+            fromGradleProperty(project, "imageVersion")
+                .orElse(extension.getImageVersion()
+            )
+        );
+        getImageRevision().value(
+            fromGradleProperty(project, "imageRevision")
+                .orElse(extension.getImageRevision())
+        );
+        getImageSourceUrl().value(
+            // from GitHUb Ations
+            fromEnvironmentVariable(project, "GITHUB_REPOSITORY")
+                .map(repo -> "https://github.com/" + repo)
+                .orElse(extension.getImageSourceUrl())
+        );
+        getExtraImageLabels().value(
+            fromListGradleProperty(project, "imageExtraLabels")
+                .orElse(extension.getExtraImageLabels())
         );
     }
 
