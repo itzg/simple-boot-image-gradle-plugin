@@ -2,11 +2,16 @@ package me.itzg.simpleimg;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Nested;
 
 public abstract class SharedProperties {
 
@@ -36,17 +41,8 @@ public abstract class SharedProperties {
 
     abstract Property<Boolean> getLayered();
 
-    abstract Property<String> getImageDescription();
-
-    abstract Property<String> getImageTitle();
-
-    abstract Property<String> getImageVersion();
-
-    abstract Property<String> getImageRevision();
-
-    abstract Property<String> getImageSourceUrl();
-
-    abstract ListProperty<String> getExtraImageLabels();
+    @Nested
+    abstract ImageLabels getLabels();
 
     @Inject
     public SharedProperties(Project project, BootImageExtension extension) {
@@ -102,26 +98,43 @@ public abstract class SharedProperties {
             fromBooleanGradleProperty(project, "imageLayered")
                 .orElse(extension.getLayered())
         );
-        getImageDescription().value(extension.getImageDescription());
-        getImageTitle().value(extension.getImageTitle());
-        getImageVersion().value(
+        applyLabels(project, extension.getLabels());
+    }
+
+    private void applyLabels(Project project, ImageLabels extension) {
+        getLabels().getDescription().value(extension.getDescription());
+        getLabels().getTitle().value(extension.getTitle());
+        getLabels().getVersion().value(
             fromGradleProperty(project, "imageVersion")
-                .orElse(extension.getImageVersion()
-            )
+                .orElse(extension.getVersion()
+                )
         );
-        getImageRevision().value(
+        getLabels().getRevision().value(
             fromGradleProperty(project, "imageRevision")
-                .orElse(extension.getImageRevision())
+                .orElse(extension.getRevision())
         );
-        getImageSourceUrl().value(
+        getLabels().getSourceUrl().value(
             // from GitHUb Ations
             fromEnvironmentVariable(project, "GITHUB_REPOSITORY")
                 .map(repo -> "https://github.com/" + repo)
-                .orElse(extension.getImageSourceUrl())
+                .orElse(extension.getSourceUrl())
         );
-        getExtraImageLabels().value(
+        getLabels().getExtra().value(
             fromListGradleProperty(project, "imageExtraLabels")
-                .orElse(extension.getExtraImageLabels())
+                .map(strings -> strings.stream()
+                    .map(s -> {
+                        final String[] parts = s.split("=", 2);
+                        if (parts.length != 2) {
+                            project.getLogger().warn("Image label '{}' is malformed", s);
+                            return null;
+                        } else {
+                            return Map.entry(parts[0], parts[1]);
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue))
+                )
+                .orElse(extension.getExtra())
         );
     }
 

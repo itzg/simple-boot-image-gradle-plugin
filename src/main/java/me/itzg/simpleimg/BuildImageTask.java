@@ -5,15 +5,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecOperations;
@@ -75,7 +78,7 @@ public abstract class BuildImageTask extends ImageHandlingTask {
 
     @Optional
     @Input
-    abstract ListProperty<String> getExtraImageLabels();
+    abstract MapProperty<String, String> getExtraImageLabels();
 
     @Inject
     protected abstract ExecOperations getExecOperations();
@@ -94,12 +97,12 @@ public abstract class BuildImageTask extends ImageHandlingTask {
             throw new IllegalArgumentException("Can't set cacheTo without buildx enabled");
         }
         getPush().set(sharedProperties.getPush().get() && getUseBuildx().get());
-        getImageDescription().set(sharedProperties.getImageDescription());
-        getImageTitle().set(sharedProperties.getImageTitle());
-        getImageVersion().set(sharedProperties.getImageVersion());
-        getImageRevision().set(sharedProperties.getImageRevision());
-        getImageSourceUrl().set(sharedProperties.getImageSourceUrl());
-        getExtraImageLabels().set(sharedProperties.getExtraImageLabels());
+        getImageDescription().set(sharedProperties.getLabels().getDescription());
+        getImageTitle().set(sharedProperties.getLabels().getTitle());
+        getImageVersion().set(sharedProperties.getLabels().getVersion());
+        getImageRevision().set(sharedProperties.getLabels().getRevision());
+        getImageSourceUrl().set(sharedProperties.getLabels().getSourceUrl());
+        getExtraImageLabels().set(sharedProperties.getLabels().getExtra());
 
         super.apply(sharedProperties);
     }
@@ -109,7 +112,8 @@ public abstract class BuildImageTask extends ImageHandlingTask {
         final var fullImageName = calculateFullImageName();
 
         getLogger().info("Building {} with base image {} tagged with {}",
-            fullImageName, getBaseImage().get(), getTags().get());
+            fullImageName, getBaseImage().get(), getTags().get()
+        );
 
         if (getLogger().isTraceEnabled()) {
             try (Stream<Path> pathStream = Files.walk(getBootImageDirectory().get().getAsFile().toPath())) {
@@ -161,8 +165,7 @@ public abstract class BuildImageTask extends ImageHandlingTask {
         if (usesBuildx()) {
             if (getPush().get()) {
                 args.add("--push");
-            }
-            else {
+            } else {
                 args.add("--load");
             }
 
@@ -177,15 +180,9 @@ public abstract class BuildImageTask extends ImageHandlingTask {
         addLabel(args, "org.opencontainers.image.version", getImageVersion());
         addLabel(args, "org.opencontainers.image.revision", getImageRevision());
         addLabel(args, "org.opencontainers.image.source", getImageSourceUrl());
-        for (final String label : getExtraImageLabels().get()) {
-            final String[] parts = label.split("=", 2);
-            if (parts.length != 2) {
-                getLogger().warn("Image label '{}' was malformed", label);
-            }
-            else {
-                args.add("--label");
-                args.add(parts[0] + "=" + parts[1]);
-            }
+        for (final Map.Entry<String,String> entry : getExtraImageLabels().get().entrySet()) {
+            args.add("--label");
+            args.add(entry.getKey() + "=" + entry.getValue());
         }
 
         args.add(getBootImageDirectory().get().getAsFile().getPath());
