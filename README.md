@@ -33,19 +33,19 @@ The properties of the extension are:
 
 | Name                    | Default                                                                       |
 |-------------------------|-------------------------------------------------------------------------------|
-| imageRepo               | Property `imageRepo`                                                          |
-| imageName               | Property `imageName`<br/>or `project.name`                                    |
 | baseImage               | Property `imageBase`<br/>or `"eclipse-temurin:17"`                            |
-| tags                    | `["latest", project.version]`                                                 |
-| fullyQualifiedImageName | Environment variable `IMAGE`<br/>or uses `imageRepo`, `imageName`, and `tags` |
-| pullForBuild            | Property `imagePull`<br/>or `false`                                           |
-| push                    | Property `imagePush`<br/>or Environment variable `PUSH_IMAGE`<br/>or `false`  |
-| layered                 | Property `imageLayered`<br/>or `true`                                         |
 | cacheFrom               | Property `imageCacheFrom`                                                     |
 | cacheTo                 | Property `imageCacheTo`                                                       |
-| useBuildx               | `true`                                                                        |
-| platforms               | _Default for builder_                                                         |
 | exportPort              | `8080`                                                                        |
+| fullyQualifiedImageName | Environment variable `IMAGE`<br/>or uses `imageRepo`, `imageName`, and `tags` |
+| imageRepo               | Property `imageRepo`                                                          |
+| imageName               | Property `imageName`<br/>or `project.name`                                    |
+| layered                 | Property `imageLayered`<br/>or `true`                                         |
+| platforms               | _Default for builder_                                                         |
+| pullForBuild            | Property `imagePull`<br/>or `false`                                           |
+| push                    | Property `imagePush`<br/>or Environment variable `PUSH_IMAGE`<br/>or `false`  |
+| tags                    | `["latest", project.version]`                                                 |
+| useBuildx               | `true`                                                                        |
 
 ## Examples
 
