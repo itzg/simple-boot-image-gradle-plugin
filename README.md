@@ -84,6 +84,7 @@ deploy:
 
 ### GitHub Actions Workflow
 
+Single platform:
 ```yaml
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -99,9 +100,38 @@ deploy:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
-            -PimageRepo=ghcr.io/...your github org goes here...
+            -PimageRepo=ghcr.io/${{ github.actor }}
             -PimagePush=true 
             -PimageCacheFrom=type=gha
             -PimageCacheTo=type=gha,mode=max
             buildSimpleBootImage
+```
+
+and multi-platform using buildx:
+```yaml
+    steps:
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2.0.0
+
+      - name: Login to image registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gradle build and push
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            -PimageRepo=ghcr.io/${{ github.actor }}
+            -PimagePlatforms=linux/amd64,linux/arm64
+            -PimagePush=true 
+            -PimageCacheFrom=type=gha
+            -PimageCacheTo=type=gha,mode=max
+            buildSimpleBootImage
+
 ```
