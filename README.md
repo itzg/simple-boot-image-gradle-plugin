@@ -44,6 +44,7 @@ The properties of the extension are:
 | cacheFrom               | Property `imageCacheFrom`                                                     |
 | cacheTo                 | Property `imageCacheTo`                                                       |
 | useBuildx               | `true`                                                                        |
+| platforms               | _Default for builder_                                                         |
 | exportPort              | `8080`                                                                        |
 
 ## Examples
@@ -79,4 +80,28 @@ deploy:
   kubectl:
     manifests:
       - k8s/*.yml
+```
+
+### Github Actions Workflow
+
+```yaml
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to image registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gradle build and push
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            -PimageRepo=ghcr.io/...your github org goes here...
+            -PimagePush=true 
+            -PimageCacheFrom=type=gha
+            -PimageCacheTo=type=gha,mode=max
+            buildSimpleBootImage
 ```

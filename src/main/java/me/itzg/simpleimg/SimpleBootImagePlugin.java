@@ -28,24 +28,26 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
         if (project.getPlugins().hasPlugin("org.springframework.boot")) {
             final BootImageExtension extension = registerExtension(project);
 
-            registerTasks(project, extension);
+            final SharedProperties sharedProperties = project.getObjects().newInstance(SharedProperties.class, project, extension);
 
-            configureBootJarTask(project, extension);
+            registerTasks(project, sharedProperties);
+
+            configureBootJarTask(project, sharedProperties);
         }
     }
 
-    private void configureBootJarTask(Project project, BootImageExtension extension) {
+    private void configureBootJarTask(Project project, SharedProperties sharedProperties) {
         project.getTasks().named("bootJar", BootJar.class, task ->
-            task.getLayered().setEnabled(extension.getLayered().get())
+            task.getLayered().setEnabled(sharedProperties.getLayered().get())
         );
     }
 
-    private void registerTasks(Project project, BootImageExtension extension) {
+    private void registerTasks(Project project, SharedProperties sharedProperties) {
         final var extractBootLayersTask =
             project.getTasks().register("extractBootLayers", ExtractBootLayersTask.class,
                 task -> {
                     task.setGroup(GROUP);
-                    task.onlyIf(spec -> extension.getLayered().get());
+                    task.onlyIf(spec -> sharedProperties.getLayered().get());
 
                     task.getLayersDirectory().convention(project.getLayout().getBuildDirectory().dir(LAYERS_SUBPATH));
                     task.getBootJar().set(bootJarProvider(project));
@@ -54,7 +56,7 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
         final var stageJarTask = project.getTasks().register("stageBootJarForImage", StageJarTask.class,
             task -> {
                 task.setGroup(GROUP);
-                task.onlyIf(spec -> !extension.getLayered().get());
+                task.onlyIf(spec -> !sharedProperties.getLayered().get());
 
                 task.getBootJar().set(bootJarProvider(project));
                 task.getStagedJar().set(project.getLayout().getBuildDirectory().file(FAT_JAR_SUBPATH));
@@ -65,9 +67,9 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
             project.getTasks().register("generateLayeredDockerfile", GenerateLayeredDockerfileTask.class,
                 task -> {
                     task.setGroup(GROUP);
-                    task.onlyIf(spec -> extension.getLayered().get());
+                    task.onlyIf(spec -> sharedProperties.getLayered().get());
 
-                    task.apply(extension);
+                    task.apply(sharedProperties);
 
                     task.getDockerfile().convention(project.getLayout().getBuildDirectory().file(DOCKERFILE_SUBPATH));
                 });
@@ -76,7 +78,7 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
             project.getTasks().register("generateFatJarDockerfile", GenerateFatJarDockerfileTask.class,
                 task -> {
                     task.setGroup(GROUP);
-                    task.onlyIf(spec -> !extension.getLayered().get());
+                    task.onlyIf(spec -> !sharedProperties.getLayered().get());
 
                     task.getDockerfile().convention(project.getLayout().getBuildDirectory().file(DOCKERFILE_SUBPATH));
 
@@ -87,7 +89,7 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
         final var buildTask = project.getTasks().register(BUILD_TASK_NAME, BuildImageTask.class,
             task -> {
                 task.setGroup(GROUP);
-                if (extension.getLayered().get()) {
+                if (sharedProperties.getLayered().get()) {
                     task.getDockerfile().set(layeredDockerfileTask.flatMap(GenerateLayeredDockerfileTask::getDockerfile));
                     task.dependsOn(extractBootLayersTask);
                 } else {
@@ -96,23 +98,21 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
                 }
                 task.getBootImageDirectory().convention(project.getLayout().getBuildDirectory().dir(BOOT_IMAGE_PATH));
 
-                task.apply(extension);
+                task.apply(sharedProperties);
             });
 
         project.getTasks().register(PUSH_TASK_NAME, PushImageTask.class,
             task -> {
-                task.onlyIf(spec -> !extension.getUseBuildx().get());
+                task.onlyIf(spec -> !sharedProperties.getUseBuildx().get());
                 task.setGroup(GROUP);
                 task.dependsOn(buildTask);
 
-                task.apply(extension);
+                task.apply(sharedProperties);
             });
     }
 
     private BootImageExtension registerExtension(Project project) {
-        var extension = project.getExtensions().create(EXTENSION_NAME, BootImageExtension.class);
-        extension.apply(project);
-        return extension;
+        return project.getExtensions().create(EXTENSION_NAME, BootImageExtension.class, project);
     }
 
     private Provider<RegularFile> bootJarProvider(Project project) {

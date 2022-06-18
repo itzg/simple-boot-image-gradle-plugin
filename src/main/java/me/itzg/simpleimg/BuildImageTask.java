@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -48,24 +49,29 @@ public abstract class BuildImageTask extends ImageHandlingTask {
     @Input
     abstract Property<String> getCacheTo();
 
+    @Optional
+    @Input
+    abstract ListProperty<String> getPlatforms();
+
     @Inject
     protected abstract ExecOperations getExecOperations();
 
     @Override
-    void apply(BootImageExtension extension) {
-        getBaseImage().set(extension.getBaseImage());
-        getExposePort().set(extension.getExposePort());
-        getUseBuildx().set(extension.getUseBuildx());
-        getPullForBuild().set(extension.getPullForBuild());
-        getCacheFrom().set(extension.getCacheFrom());
+    void apply(SharedProperties sharedProperties) {
+        getBaseImage().set(sharedProperties.getBaseImage());
+        getExposePort().set(sharedProperties.getExposePort());
+        getUseBuildx().set(sharedProperties.getUseBuildx());
+        getPullForBuild().set(sharedProperties.getPullForBuild());
+        getCacheFrom().set(sharedProperties.getCacheFrom());
         if (getUseBuildx().get()) {
-            getCacheTo().set(extension.getCacheTo());
+            getCacheTo().set(sharedProperties.getCacheTo());
+            getPlatforms().set(sharedProperties.getPlatforms());
         } else {
             throw new IllegalArgumentException("Can't set cacheTo without buildx enabled");
         }
-        getPush().set(extension.getPush().get() && getUseBuildx().get());
+        getPush().set(sharedProperties.getPush().get() && getUseBuildx().get());
 
-        super.apply(extension);
+        super.apply(sharedProperties);
     }
 
     @TaskAction
@@ -128,6 +134,11 @@ public abstract class BuildImageTask extends ImageHandlingTask {
             }
             else {
                 args.add("--load");
+            }
+
+            if (getPlatforms().isPresent() && !getPlatforms().get().isEmpty()) {
+                args.add("--platform");
+                args.add(String.join(",", getPlatforms().get()));
             }
         }
 
