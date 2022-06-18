@@ -7,6 +7,7 @@ import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Nested;
 
 public abstract class BootImageExtension {
 
@@ -32,17 +33,8 @@ public abstract class BootImageExtension {
 
     abstract ListProperty<String> getPlatforms();
 
-    abstract Property<String> getImageDescription();
-
-    abstract Property<String> getImageTitle();
-
-    abstract Property<String> getImageVersion();
-
-    abstract Property<String> getImageRevision();
-
-    abstract Property<String> getImageSourceUrl();
-
-    abstract ListProperty<String> getExtraImageLabels();
+    @Nested
+    abstract ImageLabels getLabels();
 
     /**
      * Indicates if the built image should use Spring Boot's layertools and index or just
@@ -60,21 +52,8 @@ public abstract class BootImageExtension {
         getPullForBuild().convention( false);
         getPush().convention(false);
         getLayered().convention(true);
-        getImageDescription().convention(provider(project, project::getDescription));
-        getImageTitle().convention(provider(project, project::getName));
-        getImageVersion().convention(provider(project, () -> project.getVersion().toString()));
-        getImageRevision().convention(provider(project,
-            // such as https://github.com/qoomon/gradle-git-versioning-plugin
-            lateAddedProperty(project, "git.commit")
-        ));
     }
 
-    private static Callable<String> lateAddedProperty(Project project, String name) {
-        return () -> {
-            final Object value = project.findProperty(name);
-            return value != null ? value.toString() : null;
-        };
-    }
 
     private static <T> Provider<T> provider(Project project, Callable<T> callable) {
         return project.getProviders().provider(callable);
