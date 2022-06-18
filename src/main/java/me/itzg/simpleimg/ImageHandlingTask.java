@@ -36,10 +36,10 @@ public abstract class ImageHandlingTask extends DefaultTask {
             .collect(Collectors.toSet());
     }
 
-    void apply(BootImageExtension extension) {
-        if (extension.getFullyQualifiedImageName().isPresent()) {
+    void apply(SharedProperties sharedProperties) {
+        if (sharedProperties.getFullyQualifiedImageName().isPresent()) {
             final Pattern namePattern = Pattern.compile("(.*)/(.*?)(:(.*))?");
-            final Matcher matcher = namePattern.matcher(extension.getFullyQualifiedImageName().get());
+            final Matcher matcher = namePattern.matcher(sharedProperties.getFullyQualifiedImageName().get());
             if (matcher.matches()) {
                 getImageRepo().set(matcher.group(1));
                 getImageName().set(matcher.group(2));
@@ -51,9 +51,9 @@ public abstract class ImageHandlingTask extends DefaultTask {
             }
         }
         else {
-            getImageRepo().set(extension.getImageRepo());
-            getImageName().set(extension.getImageName());
-            getTags().set(extension.getTags());
+            getImageRepo().set(sharedProperties.getImageRepo());
+            getImageName().set(sharedProperties.getImageName());
+            getTags().set(sharedProperties.getTags());
         }
     }
 }

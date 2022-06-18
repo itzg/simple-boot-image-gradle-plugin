@@ -22,7 +22,7 @@ public abstract class GenerateLayeredDockerfileTask extends DefaultTask {
     @OutputFile
     abstract RegularFileProperty getDockerfile();
 
-    void apply(BootImageExtension extension) {
+    void apply(SharedProperties extension) {
         getUseBuildx().set(extension.getUseBuildx());
     }
 
