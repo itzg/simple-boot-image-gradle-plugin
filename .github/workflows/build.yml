@@ -4,24 +4,11 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup Java JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
+    uses: itzg/github-workflows/.github/workflows/gradle-build.yml@main
