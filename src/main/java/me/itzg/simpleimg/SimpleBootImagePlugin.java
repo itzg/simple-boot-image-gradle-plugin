@@ -7,6 +7,7 @@ import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
+import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 
 @SuppressWarnings("unused")
@@ -24,7 +25,7 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        if (project.getPlugins().hasPlugin("org.springframework.boot")) {
+        project.getPluginManager().withPlugin("org.springframework.boot", bootPlugin -> {
             final BootImageExtension extension = registerExtension(project);
 
             final SharedProperties sharedProperties = project.getObjects().newInstance(SharedProperties.class, project, extension);
@@ -32,11 +33,11 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
             registerTasks(project, sharedProperties);
 
             configureBootJarTask(project, sharedProperties);
-        }
+        });
     }
 
     private void configureBootJarTask(Project project, SharedProperties sharedProperties) {
-        project.getTasks().named("bootJar", BootJar.class, task ->
+        project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, task ->
             task.getLayered().setEnabled(sharedProperties.getLayered().get())
         );
     }
