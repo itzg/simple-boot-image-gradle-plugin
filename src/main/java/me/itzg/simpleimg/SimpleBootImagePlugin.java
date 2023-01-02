@@ -38,7 +38,7 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
 
     private void configureBootJarTask(Project project, SharedProperties sharedProperties) {
         project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, task ->
-            task.getLayered().setEnabled(sharedProperties.getLayered().get())
+            task.getLayered().getEnabled().set(sharedProperties.getLayered().get())
         );
     }
 
