@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-gradle-plugin
-    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.0.1'
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.0.2'
 
 }
 
