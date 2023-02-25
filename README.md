@@ -88,6 +88,12 @@ deploy:
       - k8s/*.yml
 ```
 
+In `build.gradle`, you should also add the following to [hook into the test flag](https://skaffold.dev/docs/pipeline-stages/builders/custom/).
+
+```groovy
+test.onlyIf { !System.getenv('SKIP_TESTS') }
+```
+
 ### GitHub Actions Workflow
 
 Single platform:
