@@ -35,6 +35,7 @@ gradlePlugin {
             id = 'io.github.itzg.simple-boot-image'
             displayName = 'Simple Boot Image Plugin'
             description = 'A simple Gradle plugin to build very simple Spring Boot application Docker images'
+            tags.set(['docker', 'spring boot'])
             implementationClass = 'me.itzg.simpleimg.SimpleBootImagePlugin'
         }
     }
