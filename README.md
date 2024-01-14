@@ -60,7 +60,7 @@ The properties of the extension are:
 skaffold.yaml:
 ```yaml
 # nonk8s
-apiVersion: skaffold/v2beta27
+apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: app-dev
@@ -82,10 +82,9 @@ profiles:
           custom:
             # override this since Windows needs backslash'y paths
             buildCommand: .\gradlew pushSimpleBootImage
-deploy:
-  kubectl:
-    manifests:
-      - k8s/*.yml
+manifests:
+  rawYaml:
+    - k8s/*.yml
 ```
 
 In `build.gradle`, you should also add the following to [hook into the test flag](https://skaffold.dev/docs/pipeline-stages/builders/custom/).
