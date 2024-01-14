@@ -28,6 +28,8 @@ gitVersioning.apply {
 }
 
 gradlePlugin {
+    website = 'https://github.com/itzg/simple-boot-image-gradle-plugin'
+    vcsUrl = 'https://github.com/itzg/simple-boot-image-gradle-plugin'
     plugins {
         simpleBootImagePlugin {
             id = 'io.github.itzg.simple-boot-image'
@@ -36,12 +38,6 @@ gradlePlugin {
             implementationClass = 'me.itzg.simpleimg.SimpleBootImagePlugin'
         }
     }
-}
-
-pluginBundle {
-    website = 'https://github.com/itzg/simple-boot-image-gradle-plugin'
-    vcsUrl = 'https://github.com/itzg/simple-boot-image-gradle-plugin'
-    tags = ['docker', 'spring boot']
 }
 
 repositories {

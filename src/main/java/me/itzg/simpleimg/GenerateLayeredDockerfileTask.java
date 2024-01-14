@@ -47,7 +47,7 @@ public abstract class GenerateLayeredDockerfileTask extends DefaultTask {
                     // Workaround of https://github.com/moby/moby/issues/37965
                     "RUN true",
                 "COPY layers/application/ ./",
-                String.format("ENTRYPOINT [\"java\", \"%s\"]", getLauncherClass())
+                String.format("ENTRYPOINT [\"java\", \"%s\"]", getLauncherClass().get())
             )
         );
     }
