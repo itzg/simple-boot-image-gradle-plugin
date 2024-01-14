@@ -1,8 +1,5 @@
 package me.itzg.simpleimg;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.NonNullApi;
 import org.gradle.api.file.RegularFileProperty;
@@ -12,12 +9,19 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
 @CacheableTask
 @NonNullApi
 public abstract class GenerateLayeredDockerfileTask extends DefaultTask {
 
     @Input
     abstract Property<Boolean> getUseBuildx();
+
+    @Input
+    abstract Property<String> getLauncherClass();
 
     @OutputFile
     abstract RegularFileProperty getDockerfile();
@@ -43,7 +47,7 @@ public abstract class GenerateLayeredDockerfileTask extends DefaultTask {
                     // Workaround of https://github.com/moby/moby/issues/37965
                     "RUN true",
                 "COPY layers/application/ ./",
-                "ENTRYPOINT [\"java\", \"org.springframework.boot.loader.JarLauncher\"]"
+                String.format("ENTRYPOINT [\"java\", \"%s\"]", getLauncherClass())
             )
         );
     }

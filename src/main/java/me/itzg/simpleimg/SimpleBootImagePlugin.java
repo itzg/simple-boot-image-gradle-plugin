@@ -71,6 +71,7 @@ public class SimpleBootImagePlugin implements Plugin<Project> {
 
                     task.apply(sharedProperties);
 
+                    task.getLauncherClass().convention("org.springframework.boot.loader.launch.JarLauncher");
                     task.getDockerfile().convention(project.getLayout().getBuildDirectory().file(DOCKERFILE_SUBPATH));
                 });
 
