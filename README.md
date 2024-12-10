@@ -4,7 +4,7 @@ A simple Gradle plugin to build very simple Spring Boot application Docker image
 
 > Just Docker, Java, and your Spring Boot application
 
-More specifically, this plugin automates the best practices described in the [Spring Boot Container Images](https://docs.spring.io/spring-boot/docs/current/reference/html/container-images.html) documentation by
+More specifically, this plugin automates the best practices described in the [Spring Boot Container Images](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html) documentation by
 - Hooking into the `bootJar` task of the [Spring Boot Gradle Plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins.html#build-tool-plugins.gradle)
 - Extracting the application layers
 - Generating a Dockerfile
