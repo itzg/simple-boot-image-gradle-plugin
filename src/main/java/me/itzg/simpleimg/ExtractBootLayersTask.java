@@ -24,7 +24,8 @@ public abstract class ExtractBootLayersTask extends DefaultTask {
     @TaskAction
     void extract() {
         // Cleanup from previous run, if needed
-        getProject().delete(getProject().fileTree(getLayersDirectory()));
+        getProject().delete(getLayersDirectory());
+        getProject().mkdir(getLayersDirectory());
 
         getExecOperations()
             .javaexec(spec -> {
