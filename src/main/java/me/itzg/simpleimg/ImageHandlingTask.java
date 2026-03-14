@@ -10,7 +10,11 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
+import org.gradle.work.DisableCachingByDefault;
 
+@DisableCachingByDefault(
+    because = "Only the subclass tasks can determine this"
+)
 public abstract class ImageHandlingTask extends DefaultTask {
 
     @Optional

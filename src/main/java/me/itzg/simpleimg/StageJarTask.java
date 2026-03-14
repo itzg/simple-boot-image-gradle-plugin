@@ -6,13 +6,12 @@ import java.nio.file.StandardCopyOption;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.NonNullApi;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
-@NonNullApi
+@CacheableTask
 public abstract class StageJarTask extends DefaultTask {
     @InputFile
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     public abstract RegularFileProperty getBootJar();
 
     @OutputFile
