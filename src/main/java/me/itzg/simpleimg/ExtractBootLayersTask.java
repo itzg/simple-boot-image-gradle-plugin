@@ -1,11 +1,12 @@
 package me.itzg.simpleimg;
 
-import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.*;
 import org.gradle.process.ExecOperations;
+
+import javax.inject.Inject;
 
 @CacheableTask
 public abstract class ExtractBootLayersTask extends DefaultTask {
@@ -23,13 +24,14 @@ public abstract class ExtractBootLayersTask extends DefaultTask {
     @TaskAction
     void extract() {
         // Cleanup from previous run, if needed
-        getProject().delete(getProject().fileTree(getLayersDirectory()));
+        getProject().delete(getLayersDirectory());
+        getProject().mkdir(getLayersDirectory());
 
         getExecOperations()
             .javaexec(spec -> {
                 spec.classpath(getBootJar());
-                spec.jvmArgs("-Djarmode=layertools");
-                spec.args("extract");
+                spec.jvmArgs("-Djarmode=tools");
+                spec.args("extract", "--layers", "--launcher", "--destination", ".");
                 spec.workingDir(getLayersDirectory());
             })
             .assertNormalExitValue();

@@ -1,9 +1,9 @@
 plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '1.2.1'
+    id 'com.gradle.plugin-publish' version '2.1.0'
     // https://github.com/qoomon/gradle-git-versioning-plugin
-    id 'me.qoomon.git-versioning' version '6.4.3'
+    id 'me.qoomon.git-versioning' version '6.4.4'
 }
 
 group 'io.github.itzg'
@@ -47,7 +47,7 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-gradle-plugin
-    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.2.4'
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.5.7'
 
 }
 

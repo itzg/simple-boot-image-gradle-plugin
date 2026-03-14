@@ -1,13 +1,14 @@
 package me.itzg.simpleimg;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import javax.inject.Inject;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Nested;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public abstract class BootImageExtension {
 
@@ -44,8 +45,8 @@ public abstract class BootImageExtension {
 
     @Inject
     public BootImageExtension(Project project) {
-        getBaseImage().convention("eclipse-temurin:17");
-        getExposePort().convention(8080);
+        getBaseImage().convention(Defaults.DEFAULT_BASE_IMAGE);
+        getExposePort().convention(Defaults.DEFAULT_EXPOSE_PORT);
         getImageName().convention(provider(project, project::getName));
         getTags().convention(project.getProviders().provider(() -> List.of("latest", project.getVersion().toString())));
         getUseBuildx().convention(true);
