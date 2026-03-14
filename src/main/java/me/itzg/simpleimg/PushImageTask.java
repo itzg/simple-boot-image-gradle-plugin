@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecOperations;
+import org.gradle.work.DisableCachingByDefault;
 
+@DisableCachingByDefault(
+    because = "Docker does its own caching of pushed image layers"
+)
 public abstract class PushImageTask extends ImageHandlingTask {
 
     @Inject

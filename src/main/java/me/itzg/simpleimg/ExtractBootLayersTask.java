@@ -4,14 +4,14 @@ import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 import org.gradle.process.ExecOperations;
 
+@CacheableTask
 public abstract class ExtractBootLayersTask extends DefaultTask {
 
     @InputFile
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     abstract RegularFileProperty getBootJar();
 
     @OutputDirectory
