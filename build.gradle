@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '2.2.1'
     // https://github.com/qoomon/gradle-git-versioning-plugin
-    id 'me.qoomon.git-versioning' version '6.4.4'
+    id 'me.qoomon.git-versioning' version '7.0.0'
 }
 
 group 'io.github.itzg'
